@@ -20,7 +20,7 @@ jobs:
       - name: Checkout Tool Chain
         uses: actions/checkout@v3
         with:
-          respository: kdrag0n/proton-clang
+          repository: kdrag0n/proton-clang
           path: $GITHUB_WORKSPACE/proton-clang
 
       # - name: Checkout KernelSU
