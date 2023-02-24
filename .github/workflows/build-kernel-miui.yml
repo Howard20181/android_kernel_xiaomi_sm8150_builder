@@ -86,7 +86,7 @@ jobs:
         run: |
           cp -f kernel-source/out/arch/arm64/boot/Image-dtb anykernel3
           cp -f kernel-source/out/arch/arm64/boot/dtbo.img anykernel3
-          zip -r "MarisaKernel-${{ matrix.device }}-${{ env.middlever }}-${{ env.date }}.zip" $GITHUB_WORKSPACE/anykernel3/*
+          zip -r "MarisaKernel-${{ matrix.device }}-${{ env.middlever }}-${{ env.date }}.zip" anykernel3/*
 
       - name: Upload Anykernel
         uses: actions/upload-artifact@v3
