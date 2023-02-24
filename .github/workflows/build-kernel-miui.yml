@@ -81,14 +81,14 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: MIUI-kernel-${{ matrix.device }}
-          path: src/out/arch/arm64/boot/*
+          path: out/arch/arm64/boot/*
 
       - name: Release
         if: success()
         uses: softprops/action-gh-release@v1
         with:
           prerelease: true
-          files: src/out/arch/arm64/boot/*
+          files: out/arch/arm64/boot/*
 
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@v2
