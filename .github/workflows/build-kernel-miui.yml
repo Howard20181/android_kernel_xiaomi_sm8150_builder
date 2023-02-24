@@ -19,6 +19,9 @@ jobs:
           sudo apt-get update && sudo apt-get install -y bison build-essential curl libssl-dev git zip python2 python3 flex libncurses5-dev wget
           sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 1
 
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Checkout Tool Chain
         uses: actions/checkout@v3
         with:
@@ -51,6 +54,7 @@ jobs:
       - name: Build Kernel
         working-directory: kernel-source
         run: |
+          git apply $GITHUB_WORKSPACE/.github/patches/4.14/*.patch
           clang_path="${GITHUB_WORKSPACE}/proton-clang/bin/clang"
           gcc_path="${GITHUB_WORKSPACE}/proton-clang/bin/aarch64-linux-gnu-"
           gcc_32_path="${GITHUB_WORKSPACE}/proton-clang/bin/arm-linux-gnueabi-"

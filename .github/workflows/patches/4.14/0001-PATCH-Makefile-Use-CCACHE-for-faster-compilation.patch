@@ -1,0 +1,37 @@
+From 457986eb851b2632ebe672dedfb1c52175676396 Mon Sep 17 00:00:00 2001
+From: Howard Wu <40033067+Howard20181@users.noreply.github.com>
+Date: Sat, 25 Feb 2023 01:21:19 +0800
+Subject: [PATCH] [PATCH] Makefile: Use CCACHE for faster compilation
+
+---
+ Makefile | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 3c210a2..76ffb40 100644
+--- a/Makefile
++++ b/Makefile
+@@ -376,15 +376,15 @@ endif
+ 
+ # Make variables (CC, etc...)
+ AS		= $(CROSS_COMPILE)as
+-LD		= $(CROSS_COMPILE)ld
+-CC		= $(CROSS_COMPILE)gcc
++LD		= $(CCACHE) $(CROSS_COMPILE)ld
++CC		= $(CCACHE) $(CROSS_COMPILE)gcc
+ LDGOLD		= $(CROSS_COMPILE)ld.gold
+ CPP		= $(CC) -E
+-AR		= $(CROSS_COMPILE)ar
++AR		= $(CCACHE) $(CROSS_COMPILE)ar
+ NM		= $(CROSS_COMPILE)nm
+ STRIP		= $(CROSS_COMPILE)strip
+-OBJCOPY		= $(CROSS_COMPILE)objcopy
+-OBJDUMP		= $(CROSS_COMPILE)objdump
++OBJCOPY		= $(CCACHE) $(CROSS_COMPILE)objcopy
++OBJDUMP		= $(CCACHE) $(CROSS_COMPILE)objdump
+ AWK		= awk
+ GENKSYMS	= scripts/genksyms/genksyms
+ INSTALLKERNEL  := installkernel
+-- 
+2.35.1.windows.2
+
