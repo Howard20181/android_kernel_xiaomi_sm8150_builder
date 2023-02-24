@@ -36,6 +36,14 @@ jobs:
           ref: miui
           path: kernel-source
 
+      - name: Checkout Anykernel
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          repository: Laulan56/anykernel
+          ref: miui-r
+          path: anykernel
+
       - name: Setup KernelSU
         working-directory: kernel-source
         run: |
@@ -58,10 +66,10 @@ jobs:
           clang_path="${GITHUB_WORKSPACE}/proton-clang/bin/clang"
           gcc_path="${GITHUB_WORKSPACE}/proton-clang/bin/aarch64-linux-gnu-"
           gcc_32_path="${GITHUB_WORKSPACE}/proton-clang/bin/arm-linux-gnueabi-"
-          date="`date +"%Y%m%d%H%M"`"
+          echo "date="`date +"%Y%m%d%H%M"`""" >> $GITHUB_ENV
           firstver="Marisa"
           middlever="dev"
-          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 CC=$clang_path CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$gcc_path CROSS_COMPILE_ARM32=$gcc_32_path LOCALVERSION=-${middlever}-${date} CCACHE=/usr/bin/ccache"
+          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 CC=$clang_path CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$gcc_path CROSS_COMPILE_ARM32=$gcc_32_path LOCALVERSION=-${middlever}-${{ env.date }} CCACHE=/usr/bin/ccache"
           echo "Building kernel with $args"
 
           export KBUILD_BUILD_USER="Howard"
@@ -75,12 +83,26 @@ jobs:
           name: MIUI-kernel-${{ matrix.device }}
           path: kernel-source/out/arch/arm64/boot/*
 
+      - name: Prepare Anykernel
+        run: |
+          cp -f kernel-source/out/arch/arm64/boot/Image-dtb anykernel3
+          cp -f kernel-source/out/arch/arm64/boot/dtbo.img anykernel3
+          zip -r "MarisaKernel-${{ matrix.device }}-$middlever-${{ env.date }}.zip" $GITHUB_WORKSPACE/anykernel3/*
+
+      - name: Upload MarisaKernel-${{ matrix.device }}-$middlever-${{ env.date }}.zip
+        uses: actions/upload-artifact@v3
+        with:
+          name: MarisaKernel-${{ matrix.device }}-$middlever-${{ env.date }}
+          path: anykernel3/*
+
       - name: Release
         if: success()
         uses: softprops/action-gh-release@v1
         with:
           prerelease: true
-          files: kernel-source/out/arch/arm64/boot/*
+          files: |
+            kernel-source/out/arch/arm64/boot/*
+            MarisaKernel-${{ matrix.device }}-$middlever-${{ env.date }}.zip
           draft: true
           tag_name: ${{ github.ref }}-${{ matrix.device }}
 
