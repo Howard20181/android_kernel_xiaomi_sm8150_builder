@@ -57,7 +57,6 @@ jobs:
           echo "CONFIG_KPROBES=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
           echo "CONFIG_HAVE_KPROBES=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
           echo "CONFIG_KPROBE_EVENTS=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
-          echo "CONFIG_LOCALVERSION=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
 
       - name: Setup Ccache
         uses: hendrikmuhs/ccache-action@v1.2
@@ -76,7 +75,7 @@ jobs:
           middlever=dev
           echo "date=$date" >> $GITHUB_ENV
           echo "middlever=$middlever" >> $GITHUB_ENV
-          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 CC=$clang_path CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$gcc_path CROSS_COMPILE_ARM32=$gcc_32_path CCACHE=/usr/bin/ccache"
+          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 CC=$clang_path CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$gcc_path CROSS_COMPILE_ARM32=$gcc_32_path LOCALVERSION=-$middlever-$date CCACHE=/usr/bin/ccache"
           echo "Building kernel with $args"
 
           export KBUILD_BUILD_USER="Howard"
