@@ -33,12 +33,6 @@ jobs:
           ref: miui
           path: kernel-source
 
-      - name: Setup Ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: MIUI-Kernel-${{ matrix.device }}
-          save: ${{ github.event_name != 'pull_request' }}
-
       - name: Setup KernelSU
         working-directory: kernel-source
         run: |
@@ -47,6 +41,12 @@ jobs:
           echo "CONFIG_KPROBES=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
           echo "CONFIG_HAVE_KPROBES=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
           echo "CONFIG_KPROBE_EVENTS=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
+
+      - name: Setup Ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: MIUI-Kernel-${{ matrix.device }}
+          save: ${{ github.event_name != 'pull_request' }}
 
       - name: Build Kernel
         working-directory: kernel-source
