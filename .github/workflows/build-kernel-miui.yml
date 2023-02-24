@@ -33,6 +33,7 @@ jobs:
       - name: Setup kernel source
         uses: actions/checkout@v3
         with:
+          submodules: true
           repository: Laulan56/android_kernel_xiaomi_sm8150
           ref: miui
           path: kernel-source
