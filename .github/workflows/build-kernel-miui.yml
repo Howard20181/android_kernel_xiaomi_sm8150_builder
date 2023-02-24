@@ -15,7 +15,9 @@ jobs:
 
     steps:
       - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y bison build-essential bc curl libssl-dev git zip python2 python3 flex cpio libncurses5-dev wget
+        run: |
+          sudo apt-get update && sudo apt-get install -y bison build-essential curl libssl-dev git zip python2 python3 flex libncurses5-dev wget
+          sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 1
 
       - name: Checkout Tool Chain
         uses: actions/checkout@v3
@@ -72,8 +74,7 @@ jobs:
 
           export KBUILD_BUILD_USER="Howard"
           export KBUILD_BUILD_HOST="MarisaKernel"
-          make mrproper
-          make $args mrproper
+
           make $args ${{ matrix.device }}_defconfig && make $args
 
       - name: Upload MIUI-kernel-${{ matrix.device }}
@@ -83,6 +84,7 @@ jobs:
           path: src/out/arch/arm64/boot/*
 
       - name: Release
+        if: success()
         uses: softprops/action-gh-release@v1
         with:
           prerelease: true
