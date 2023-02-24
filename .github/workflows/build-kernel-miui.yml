@@ -51,13 +51,13 @@ jobs:
       - name: Build Kernel
         working-directory: kernel-source
         run: |
-          clang_path="ccache ${GITHUB_WORKSPACE}/proton-clang/bin/clang"
-          gcc_path="ccache ${GITHUB_WORKSPACE}/proton-clang/bin/aarch64-linux-gnu-"
-          gcc_32_path="ccache ${GITHUB_WORKSPACE}/proton-clang/bin/arm-linux-gnueabi-"
+          clang_path="${GITHUB_WORKSPACE}/proton-clang/bin/clang"
+          gcc_path="${GITHUB_WORKSPACE}/proton-clang/bin/aarch64-linux-gnu-"
+          gcc_32_path="${GITHUB_WORKSPACE}/proton-clang/bin/arm-linux-gnueabi-"
           date="`date +"%Y%m%d%H%M"`"
           firstver="Marisa"
           middlever="dev"
-          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 CC="$clang_path" CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE="$gcc_path" CROSS_COMPILE_ARM32="$gcc_32_path" LOCALVERSION=-${middlever}-${date} CCACHE=/usr/bin/ccache"
+          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 CC=$clang_path CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$gcc_path CROSS_COMPILE_ARM32=$gcc_32_path LOCALVERSION=-${middlever}-${date} CCACHE=/usr/bin/ccache"
           echo "Building kernel with $args"
 
           export KBUILD_BUILD_USER="Howard"
