@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y bison build-essential bc curl libssl-dev git zip python-is-python3 python3 flex cpio libncurses5-dev wget
+        run: sudo apt-get update && sudo apt-get install -y bison build-essential bc curl libssl-dev git zip python2 python3 flex cpio libncurses5-dev wget
 
       - name: Checkout Tool Chain
         uses: actions/checkout@v3
@@ -81,3 +81,15 @@ jobs:
         with:
           name: MIUI-kernel-${{ matrix.device }}
           path: src/out/arch/arm64/boot/*
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: true
+          files: src/out/arch/arm64/boot/*
+
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          retain_days: 0
+          keep_minimum_runs: 10
