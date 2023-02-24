@@ -1,7 +1,7 @@
 From 457986eb851b2632ebe672dedfb1c52175676396 Mon Sep 17 00:00:00 2001
 From: Howard Wu <40033067+Howard20181@users.noreply.github.com>
 Date: Sat, 25 Feb 2023 01:21:19 +0800
-Subject: [PATCH] [PATCH] Makefile: Use CCACHE for faster compilation
+Subject: [PATCH] Makefile: Use CCACHE for faster compilation
 
 ---
  Makefile | 10 +++++-----
