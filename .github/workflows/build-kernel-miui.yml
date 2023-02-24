@@ -25,13 +25,6 @@ jobs:
           repository: kdrag0n/proton-clang
           path: proton-clang
 
-      # - name: Checkout KernelSU
-      #   uses: actions/checkout@v3
-      #   with:
-      #     path: KernelSU
-      #     ref: main
-      #     fetch-depth: 0
-
       - name: Setup kernel source
         uses: actions/checkout@v3
         with:
@@ -46,31 +39,26 @@ jobs:
           key: MIUI-Kernel-${{ matrix.device }}
           save: ${{ github.event_name != 'pull_request' }}
 
-      # - name: Setup KernelSU
-      #   working-directory: WSA-Linux-Kernel
-      #   run: |
-      #     echo "[+] KernelSU setup"
-      #     KERNEL_ROOT=$GITHUB_WORKSPACE/WSA-Linux-Kernel
-      #     echo "[+] KERNEL_ROOT: $KERNEL_ROOT"
-      #     echo "[+] Copy KernelSU driver to $KERNEL_ROOT/drivers"
-      #     ln -sf $GITHUB_WORKSPACE/KernelSU/kernel $KERNEL_ROOT/drivers/kernelsu
-      #     echo "[+] Add KernelSU driver to Makefile"
-      #     DRIVER_MAKEFILE=$KERNEL_ROOT/drivers/Makefile
-      #     grep -q "kernelsu" $DRIVER_MAKEFILE || echo "obj-y += kernelsu/" >> $DRIVER_MAKEFILE
-      #     echo "[+] Apply KernelSU patches"
-      #     cd $KERNEL_ROOT && git apply $GITHUB_WORKSPACE/KernelSU/.github/patches/5.10/*.patch
-      #     echo "[+] KernelSU setup done."
+      - name: Setup KernelSU
+        working-directory: kernel-source
+        run: |
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+          echo "CONFIG_MODULES=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
+          echo "CONFIG_KPROBES=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
+          echo "CONFIG_HAVE_KPROBES=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
+          echo "CONFIG_KPROBE_EVENTS=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
 
       - name: Build Kernel
         working-directory: kernel-source
         run: |
-          clang_path="${GITHUB_WORKSPACE}/proton-clang/bin/clang"
+          clang_path="ccache ${GITHUB_WORKSPACE}/proton-clang/bin/clang"
           gcc_path="${GITHUB_WORKSPACE}/proton-clang/bin/aarch64-linux-gnu-"
           gcc_32_path="${GITHUB_WORKSPACE}/proton-clang/bin/arm-linux-gnueabi-"
           date="`date +"%Y%m%d%H%M"`"
           firstver="Marisa"
           middlever="dev"
           args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 CC=$clang_path CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$gcc_path CROSS_COMPILE_ARM32=$gcc_32_path LOCALVERSION=-${middlever}-${date} CCACHE=/usr/bin/ccache"
+          echo "Building kernel with $args"
 
           export KBUILD_BUILD_USER="Howard"
           export KBUILD_BUILD_HOST="MarisaKernel"
@@ -81,14 +69,14 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: MIUI-kernel-${{ matrix.device }}
-          path: arch/arm64/boot/*
+          path: kernel-source/out/arch/arm64/boot/*
 
       - name: Release
         if: success()
         uses: softprops/action-gh-release@v1
         with:
           prerelease: true
-          files: arch/arm64/boot/*
+          files: kernel-source/out/arch/arm64/boot/*
           draft: true
           tag_name: ${{ github.ref }}-${{ matrix.device }}
 
