@@ -71,8 +71,9 @@ jobs:
 
           export KBUILD_BUILD_USER="Howard"
           export KBUILD_BUILD_HOST="MarisaKernel"
-
-          make $args ${{ matrix.device }}_defconfig&&make $args
+          make mrproper
+          make $args mrproper
+          make $args ${{ matrix.device }}_defconfig && make $args
 
       - name: Upload MIUI-kernel-${{ matrix.device }}
         uses: actions/upload-artifact@v3
