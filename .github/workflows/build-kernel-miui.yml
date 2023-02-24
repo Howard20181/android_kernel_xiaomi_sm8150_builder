@@ -72,7 +72,7 @@ jobs:
           gcc_path="${GITHUB_WORKSPACE}/proton-clang/bin/aarch64-linux-gnu-"
           gcc_32_path="${GITHUB_WORKSPACE}/proton-clang/bin/arm-linux-gnueabi-"
           date=$(date +"%Y%m%d%H%M")
-          middlever=dev
+          middlever=r23
           echo "date=$date" >> $GITHUB_ENV
           echo "middlever=$middlever" >> $GITHUB_ENV
           args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 CC=$clang_path CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$gcc_path CROSS_COMPILE_ARM32=$gcc_32_path LOCALVERSION=-$middlever-$date CCACHE=/usr/bin/ccache"
