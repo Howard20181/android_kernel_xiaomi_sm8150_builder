@@ -67,9 +67,8 @@ jobs:
           gcc_path="${GITHUB_WORKSPACE}/proton-clang/bin/aarch64-linux-gnu-"
           gcc_32_path="${GITHUB_WORKSPACE}/proton-clang/bin/arm-linux-gnueabi-"
           echo "date=`date +"%Y%m%d%H%M"`" >> $GITHUB_ENV
-          firstver="Marisa"
-          middlever="dev"
-          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 CC=$clang_path CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$gcc_path CROSS_COMPILE_ARM32=$gcc_32_path LOCALVERSION=-${middlever}-${{ env.date }} CCACHE=/usr/bin/ccache"
+          echo "middlever=dev" >> $GITHUB_ENV
+          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 CC=$clang_path CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$gcc_path CROSS_COMPILE_ARM32=$gcc_32_path LOCALVERSION=-${{ env.middlever }}-${{ env.date }} CCACHE=/usr/bin/ccache"
           echo "Building kernel with $args"
 
           export KBUILD_BUILD_USER="Howard"
@@ -87,12 +86,12 @@ jobs:
         run: |
           cp -f kernel-source/out/arch/arm64/boot/Image-dtb anykernel3
           cp -f kernel-source/out/arch/arm64/boot/dtbo.img anykernel3
-          zip -r "MarisaKernel-${{ matrix.device }}-$middlever-${{ env.date }}.zip" $GITHUB_WORKSPACE/anykernel3/*
+          zip -r "MarisaKernel-${{ matrix.device }}-${{ env.middlever }}-${{ env.date }}.zip" $GITHUB_WORKSPACE/anykernel3/*
 
-      - name: Upload MarisaKernel-${{ matrix.device }}-$middlever-${{ env.date }}.zip
+      - name: Upload MarisaKernel-${{ matrix.device }}-${{ env.middlever }}-${{ env.date }}.zip
         uses: actions/upload-artifact@v3
         with:
-          name: MarisaKernel-${{ matrix.device }}-$middlever-${{ env.date }}
+          name: MarisaKernel-${{ matrix.device }}-${{ env.middlever }}-${{ env.date }}
           path: anykernel3/*
 
       - name: Release
@@ -102,7 +101,7 @@ jobs:
           prerelease: true
           files: |
             kernel-source/out/arch/arm64/boot/*
-            MarisaKernel-${{ matrix.device }}-$middlever-${{ env.date }}.zip
+            MarisaKernel-${{ matrix.device }}-${{ env.middlever }}-${{ env.date }}.zip
           draft: true
           tag_name: ${{ github.ref }}-${{ matrix.device }}
 
