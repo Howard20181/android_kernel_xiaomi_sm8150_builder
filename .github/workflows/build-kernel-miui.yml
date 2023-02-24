@@ -58,7 +58,6 @@ jobs:
       #     echo "[+] KernelSU setup done."
 
       - name: Build Kernel
-        working-directory: WSA-Linux-Kernel
         run: |
           clang_path="${GITHUB_WORKSPACE}/proton-clang/bin/clang"
           gcc_path="${GITHUB_WORKSPACE}/proton-clang/bin/aarch64-linux-gnu-"
