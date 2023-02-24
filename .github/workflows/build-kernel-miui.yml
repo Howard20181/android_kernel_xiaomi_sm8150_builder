@@ -12,6 +12,11 @@ jobs:
 
     name: Build MIUI-Kernel-${{ matrix.device }}
     runs-on: ubuntu-latest
+    env:
+      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_MAXSIZE: "2G"
+      CCACHE_HARDLINK: "true"
 
     steps:
       - name: Install Dependencies
