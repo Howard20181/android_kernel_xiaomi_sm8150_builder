@@ -1,0 +1,82 @@
+name: Build MIUI-Kernel
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        device: [raphael, cepheus]
+
+    name: Build MIUI-Kernel-${{ matrix.device }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          apt-get update && apt-get install -y bison build-essential bc curl libssl-dev git zip python python3 flex cpio libncurses5-dev wget
+
+      - name: Checkout Tool Chain
+        uses: actions/checkout@v3
+        with:
+          respository: kdrag0n/proton-clang
+          path: proton-clang
+
+      # - name: Checkout KernelSU
+      #   uses: actions/checkout@v3
+      #   with:
+      #     path: KernelSU
+      #     ref: main
+      #     fetch-depth: 0
+
+      - name: Setup kernel source
+        uses: actions/checkout@v3
+        with:
+          repository: Laulan56/android_kernel_xiaomi_sm8150
+          ref: miui
+
+      - name: Setup Ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: MIUI-Kernel-${{ matrix.device }}
+          save: ${{ github.event_name != 'pull_request' }}
+
+      # - name: Setup KernelSU
+      #   working-directory: WSA-Linux-Kernel
+      #   run: |
+      #     echo "[+] KernelSU setup"
+      #     KERNEL_ROOT=$GITHUB_WORKSPACE/WSA-Linux-Kernel
+      #     echo "[+] KERNEL_ROOT: $KERNEL_ROOT"
+      #     echo "[+] Copy KernelSU driver to $KERNEL_ROOT/drivers"
+      #     ln -sf $GITHUB_WORKSPACE/KernelSU/kernel $KERNEL_ROOT/drivers/kernelsu
+      #     echo "[+] Add KernelSU driver to Makefile"
+      #     DRIVER_MAKEFILE=$KERNEL_ROOT/drivers/Makefile
+      #     grep -q "kernelsu" $DRIVER_MAKEFILE || echo "obj-y += kernelsu/" >> $DRIVER_MAKEFILE
+      #     echo "[+] Apply KernelSU patches"
+      #     cd $KERNEL_ROOT && git apply $GITHUB_WORKSPACE/KernelSU/.github/patches/5.10/*.patch
+      #     echo "[+] KernelSU setup done."
+
+      - name: Build Kernel
+        working-directory: WSA-Linux-Kernel
+        run: |
+          clang_path="${GITHUB_WORKSPACE}/proton-clang/bin/clang"
+          gcc_path="${GITHUB_WORKSPACE}/proton-clang/bin/aarch64-linux-gnu-"
+          gcc_32_path="${GITHUB_WORKSPACE}/proton-clang/bin/arm-linux-gnueabi-"
+          date="`date +"%Y%m%d%H%M"`"
+          firstver="Marisa"
+          middlever="dev"
+          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 CC=$clang_path CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$gcc_path CROSS_COMPILE_ARM32=$gcc_32_path LOCALVERSION=-${middlever}-${date} CCACHE=/usr/bin/ccache"
+
+          export KBUILD_BUILD_USER="Howard"
+          export KBUILD_BUILD_HOST="MarisaKernel"
+
+          make $args ${{ matrix.device }}_defconfig&&make $args
+
+      - name: Upload MIUI-kernel-${{ matrix.device }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: MIUI-kernel-${{ matrix.device }}
+          path: src/out/arch/arm64/boot/*
