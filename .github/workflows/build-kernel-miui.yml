@@ -92,13 +92,13 @@ jobs:
         run: |
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/Image-dtb .
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/dtbo.img .
-          zip -r "MarisaKernel-${{ matrix.device }}-${{ env.middlever }}-${{ env.date }}.zip" *
-          mv "MarisaKernel-${{ matrix.device }}-${{ env.middlever }}-${{ env.date }}.zip" $GITHUB_WORKSPACE
+          zip -r "MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-${{ env.date }}.zip" *
+          mv "MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-${{ env.date }}.zip" $GITHUB_WORKSPACE
 
       - name: Upload Anykernel
         uses: actions/upload-artifact@v3
         with:
-          name: MarisaKernel-${{ matrix.device }}-${{ env.middlever }}-${{ env.date }}
+          name: MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-${{ env.date }}
           path: anykernel/*
 
       - name: Release
@@ -108,7 +108,7 @@ jobs:
           prerelease: true
           files: |
             kernel-source/out/arch/arm64/boot/*
-            MarisaKernel-${{ matrix.device }}-${{ env.middlever }}-${{ env.date }}.zip
+            MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-${{ env.date }}.zip
           draft: true
           tag_name: ${{ github.ref }}-${{ matrix.device }}
 
