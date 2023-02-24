@@ -15,9 +15,7 @@ jobs:
 
     steps:
       - name: Install Dependencies
-        run: |
-          sudo apt update
-          apt-get update && apt-get install -y bison build-essential bc curl libssl-dev git zip python python3 flex cpio libncurses5-dev wget
+        run: sudo apt-get update && sudo apt-get install -y bison build-essential bc curl libssl-dev git zip python python3 flex cpio libncurses5-dev wget
 
       - name: Checkout Tool Chain
         uses: actions/checkout@v3
