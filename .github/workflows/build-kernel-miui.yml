@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Install Dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y bison build-essential curl libssl-dev git zip python2 python3 flex libncurses5-dev wget libncurses-dev binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu
+          sudo apt-get update && sudo apt-get install -y bison build-essential curl libssl-dev git zip python2 python3 flex libncurses5-dev wget binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu
           sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 1
           export LLVM_VERSION=13
           echo "LLVM_VERSION=$LLVM_VERSION" >> $GITHUB_ENV
@@ -85,7 +85,7 @@ jobs:
           middlever=r23
           echo "date=$date" >> $GITHUB_ENV
           echo "middlever=$middlever" >> $GITHUB_ENV
-          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 HOSTCC=clang HOSTCXX=clang++ CC=clang CROSS_COMPILE=aarch64-linux-gnu AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump READELF=llvm-readelf STRIP=llvm-strip LOCALVERSION=-$middlever-$date CCACHE=ccache"
+          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 HOSTCC=clang HOSTCXX=clang++ CC=clang CROSS_COMPILE=aarch64-linux-gnu- AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump READELF=llvm-readelf STRIP=llvm-strip LOCALVERSION=-$middlever-$date CCACHE=ccache"
           echo "Building kernel with $args"
 
           export KBUILD_BUILD_USER="Howard"
