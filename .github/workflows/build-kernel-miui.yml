@@ -37,12 +37,11 @@ jobs:
         if: steps.cache-proton-clang.outputs.cache-hit != 'true'
         run: |
           url="$(curl -s https://api.github.com/repos/kdrag0n/proton-clang/releases/latest | jq -r .tarball_url)"
-          aria2c --no-conf --log-level=info -x16 -s16 -j5 -c -R --async-dns=false --check-integrity=true --continue=true --allow-overwrite=true --conditional-get=true "$url"
-          name=$(stat -c "%n" *.tar.gz | sed 's/.tar.gz//g')
-          tar -xzf "$name".tar.gz
-          rm "$name".tar.gz
+          aria2c --no-conf --log-level=info -x16 -s16 -j5 -c -R --async-dns=false --check-integrity=true --continue=true --allow-overwrite=true --conditional-get=true --out=proton-clang.tar.gz "$url"
+          tar -xzf proton-clang.tar.gz
+          rm proton-clang.tar.gz
+          name=$(stat -c "%n" *proton-clang*)
           mkdir proton-clang
-          ls -R
           mv "$name"/* proton-clang
           rm -rf "$name"
 
