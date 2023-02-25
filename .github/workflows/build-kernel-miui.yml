@@ -20,26 +20,17 @@ jobs:
     steps:
       - name: Install Dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y bison build-essential curl libssl-dev git zip python2 python3 flex libncurses5-dev wget binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu
+          sudo apt-get update && sudo apt-get install -y bison build-essential curl libssl-dev git zip python2 python3 flex libncurses5-dev wget
           sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 1
-          export LLVM_VERSION=13
-          echo "LLVM_VERSION=$LLVM_VERSION" >> $GITHUB_ENV
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh $LLVM_VERSION
-          rm ./llvm.sh
-          sudo ln -s --force /usr/bin/clang-$LLVM_VERSION /usr/bin/clang
-          sudo ln -s --force /usr/bin/ld.lld-$LLVM_VERSION /usr/bin/ld.lld
-          sudo ln -s --force /usr/bin/llvm-objdump-$LLVM_VERSION /usr/bin/llvm-objdump
-          sudo ln -s --force /usr/bin/llvm-ar-$LLVM_VERSION /usr/bin/llvm-ar
-          sudo ln -s --force /usr/bin/llvm-nm-$LLVM_VERSION /usr/bin/llvm-nm
-          sudo ln -s --force /usr/bin/llvm-strip-$LLVM_VERSION /usr/bin/llvm-strip
-          sudo ln -s --force /usr/bin/llvm-objcopy-$LLVM_VERSION /usr/bin/llvm-objcopy
-          sudo ln -s --force /usr/bin/llvm-readelf-$LLVM_VERSION /usr/bin/llvm-readelf
-          sudo ln -s --force /usr/bin/clang++-$LLVM_VERSION /usr/bin/clang++
 
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Checkout Tool Chain
+        uses: actions/checkout@v3
+        with:
+          repository: kdrag0n/proton-clang
+          path: proton-clang
 
       - name: Setup kernel source
         uses: actions/checkout@v3
@@ -80,13 +71,14 @@ jobs:
       - name: Build Kernel
         working-directory: kernel-source
         run: |
+          export PATH="$GITHUB_WORKSPACE/proton-clang/bin:$PATH"
           git apply $GITHUB_WORKSPACE/.github/patches/4.14/*.patch
           date=$(date +"%Y%m%d%H%M")
           middlever=r23
           echo "date=$date" >> $GITHUB_ENV
           echo "middlever=$middlever" >> $GITHUB_ENV
-          LLVM="CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm STRIP=llvm-strip OBJDUMP=llvm-objdump READELF=llvm-readelf HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar HOSTLD=ld.lld"
-          args="-j`nproc` $LLVM O=out ARCH=arm64 SUBARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- LOCALVERSION=-$middlever-$date CCACHE=ccache"
+          LLVM="CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm STRIP=llvm-strip OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump READELF=llvm-readelf HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar HOSTLD=ld.lld"
+          args="-j`nproc` $LLVM O=out ARCH=arm64 SUBARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- LOCALVERSION=-$middlever-$date CCACHE=ccache"
           echo "Building kernel with $args"
 
           export KBUILD_BUILD_USER="Howard"
