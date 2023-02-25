@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Install Dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y bison build-essential curl libssl-dev git zip python2 python3 flex libncurses5-dev wget
+          sudo apt-get update && sudo apt-get install -y bison build-essential curl libssl-dev git zip python2 python3 flex libncurses5-dev wget libncurses-dev binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu
           sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 1
           export LLVM_VERSION=13
           echo "LLVM_VERSION=$LLVM_VERSION" >> $GITHUB_ENV
