@@ -20,17 +20,30 @@ jobs:
     steps:
       - name: Install Dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y bison build-essential curl libssl-dev git zip python2 python3 flex libncurses5-dev wget
+          sudo apt-get update && sudo apt-get install -y bison build-essential curl libssl-dev git zip python2 python3 flex libncurses5-dev wget aria2
           sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 1
 
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Checkout Tool Chain
-        uses: actions/checkout@v3
+      - name: Cache Build Tools
+        id: cache-proton-clang
+        uses: actions/cache@v3
         with:
-          repository: kdrag0n/proton-clang
           path: proton-clang
+          key: proton-clang
+
+      - name: Download Build Tools
+        if: steps.cache-proton-clang.outputs.cache-hit != 'true'
+        run: |
+          url="$(curl -s https://api.github.com/repos/kdrag0n/proton-clang/releases/latest | jq -r .tarball_url)"
+          aria2c --no-conf --log-level=info -x16 -s16 -j5 -c -R --async-dns=false --check-integrity=true --continue=true --allow-overwrite=true --conditional-get=true "$url"
+          name=$(stat -c "%n" *.tar.gz | sed 's/.tar.gz//g')
+          tar -xzf "$name".tar.gz
+          rm "$name".tar.gz
+          mkdir proton-clang
+          mv "$name"/* proton-clang
+          rm -rf "$name"
 
       - name: Setup kernel source
         uses: actions/checkout@v3
