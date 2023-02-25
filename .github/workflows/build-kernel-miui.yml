@@ -42,6 +42,7 @@ jobs:
           tar -xzf "$name".tar.gz
           rm "$name".tar.gz
           mkdir proton-clang
+          ls -R
           mv "$name"/* proton-clang
           rm -rf "$name"
 
