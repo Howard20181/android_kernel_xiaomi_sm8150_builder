@@ -85,7 +85,7 @@ jobs:
           middlever=r23
           echo "date=$date" >> $GITHUB_ENV
           echo "middlever=$middlever" >> $GITHUB_ENV
-          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 HOSTCC=clang HOSTCXX=clang++ CC=clang CROSS_COMPILE=aarch64-linux-gnu- AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump READELF=llvm-readelf STRIP=llvm-strip LOCALVERSION=-$middlever-$date CCACHE=ccache"
+          args="-j`nproc` O=out ARCH=arm64 SUBARCH=arm64 HOSTCC=clang HOSTCXX=clang++ CC=clang CROSS_COMPILE=aarch64-linux-gnu- AR=llvm-ar NM=llvm-nm OBJDUMP=llvm-objdump READELF=llvm-readelf STRIP=llvm-strip LOCALVERSION=-$middlever-$date CCACHE=ccache"
           echo "Building kernel with $args"
 
           export KBUILD_BUILD_USER="Howard"
