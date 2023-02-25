@@ -85,13 +85,14 @@ jobs:
         working-directory: kernel-source
         run: |
           export PATH="$GITHUB_WORKSPACE/proton-clang/bin:$PATH"
-          git apply $GITHUB_WORKSPACE/.github/patches/4.14/*.patch
+          export PATH="/usr/lib/ccache:$PATH"
+          # git apply $GITHUB_WORKSPACE/.github/patches/4.14/*.patch
           date=$(date +"%Y%m%d%H%M")
           middlever=r23
           echo "date=$date" >> $GITHUB_ENV
           echo "middlever=$middlever" >> $GITHUB_ENV
           LLVM="CC='ccache clang' LD='ccache ld.lld' AR='ccache llvm-ar' NM=llvm-nm STRIP=llvm-strip OBJCOPY='ccache llvm-objcopy' OBJDUMP='ccache llvm-objdump' READELF=llvm-readelf HOSTCC='ccache clang' HOSTCXX='ccache clang++' HOSTAR='ccache llvm-ar' HOSTLD='ccache ld.lld'"
-          args="-j`nproc` $LLVM O=out ARCH=arm64 SUBARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- LOCALVERSION=-$middlever-$date CCACHE=/usr/bin/ccache"
+          args="-j`nproc` $LLVM O=out ARCH=arm64 SUBARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- LOCALVERSION=-$middlever-$date"
           echo "Building kernel with $args"
 
           export KBUILD_BUILD_USER="Howard"
