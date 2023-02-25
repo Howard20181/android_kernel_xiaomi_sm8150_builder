@@ -86,14 +86,13 @@ jobs:
         run: |
           export PATH="$GITHUB_WORKSPACE/proton-clang/bin:$PATH"
           export PATH="/usr/lib/ccache:$PATH"
-          # git apply $GITHUB_WORKSPACE/.github/patches/4.14/*.patch
+          git apply $GITHUB_WORKSPACE/.github/patches/4.14/*.patch
           date=$(date +"%Y%m%d%H%M")
           middlever=r23
           echo "date=$date" >> $GITHUB_ENV
           echo "middlever=$middlever" >> $GITHUB_ENV
-          CROSS_COMPILE="aarch64-linux-gnu-"
-          LLVM="CC='ccache "$CROSS_COMPILE"clang' LD='ccache "$CROSS_COMPILE"ld.lld' AR='ccache "$CROSS_COMPILE"llvm-ar' NM="$CROSS_COMPILE"llvm-nm STRIP="$CROSS_COMPILE"llvm-strip OBJCOPY='ccache "$CROSS_COMPILE"llvm-objcopy' OBJDUMP='ccache "$CROSS_COMPILE"llvm-objdump' READELF=llvm-readelf HOSTCC='ccache clang' HOSTCXX='ccache clang++' HOSTAR='ccache llvm-ar' HOSTLD='ccache ld.lld'"
-          args="-j`nproc` $LLVM O=out ARCH=arm64 SUBARCH=arm64 CROSS_COMPILE=$CROSS_COMPILE CROSS_COMPILE_ARM32=arm-linux-gnueabi- LOCALVERSION=-$middlever-$date"
+          args="-j`nproc` O=out LLVM=1 CCACHE=ccache ARCH=arm64 SUBARCH=arm64 \
+            CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- LOCALVERSION=-$middlever-$date"
           echo "Building kernel with $args"
 
           export KBUILD_BUILD_USER="Howard"

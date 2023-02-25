@@ -1,45 +1,68 @@
-From adf0ac8595535ac07edecf9a64cc311cd3b63f9b Mon Sep 17 00:00:00 2001
+From 3367b926b1f531634671df2707a4a4b4039faca9 Mon Sep 17 00:00:00 2001
 From: Howard Wu <40033067+Howard20181@users.noreply.github.com>
-Date: Sat, 25 Feb 2023 03:18:13 +0800
+Date: Sat, 25 Feb 2023 21:36:55 +0800
 Subject: [PATCH] Makefile: Use CCACHE for faster compilation
 
 ---
- Makefile | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ Makefile | 38 +++++++++++++++++++++++++++++---------
+ 1 file changed, 29 insertions(+), 9 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 3c210a2..f1ef7b0 100644
+index 3c210a2..6f68203 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -361,8 +361,8 @@ HOST_LFS_CFLAGS := $(shell getconf LFS_CFLAGS 2>/dev/null)
+@@ -361,8 +361,14 @@ HOST_LFS_CFLAGS := $(shell getconf LFS_CFLAGS 2>/dev/null)
  HOST_LFS_LDFLAGS := $(shell getconf LFS_LDFLAGS 2>/dev/null)
  HOST_LFS_LIBS := $(shell getconf LFS_LIBS 2>/dev/null)
  
 -HOSTCC       = gcc
 -HOSTCXX      = g++
++ifneq ($(LLVM),)
++HOSTCC	= $(CCACHE) clang
++HOSTCXX	= $(CCACHE) clang++
++else
 +HOSTCC       = $(CCACHE) gcc
 +HOSTCXX      = $(CCACHE) g++
++endif
++
  HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
  		-fomit-frame-pointer -std=gnu89 $(HOST_LFS_CFLAGS)
  HOSTCXXFLAGS := -O2 $(HOST_LFS_CFLAGS)
-@@ -376,15 +376,15 @@ endif
+@@ -375,16 +381,30 @@ HOSTCFLAGS  += -Wno-unused-value -Wno-unused-parameter \
+ endif
  
  # Make variables (CC, etc...)
++
++ifneq ($(LLVM),)
++CC		= $(CCACHE) clang
++LD		= $(CCACHE) ld.lld
++AR		= $(CCACHE) llvm-ar
++NM		= llvm-nm
++OBJCOPY		= $(CCACHE) llvm-objcopy
++OBJDUMP		= $(CCACHE) llvm-objdump
++READELF		= llvm-readelf
++STRIP		= llvm-strip
++else
++CC		= $(CCACHE) $(CROSS_COMPILE)gcc
++LD		= $(CCACHE) $(CROSS_COMPILE)ld
++AR		= $(CCACHE) $(CROSS_COMPILE)ar
++NM		= $(CROSS_COMPILE)nm
++OBJCOPY		= $(CCACHE) $(CROSS_COMPILE)objcopy
++OBJDUMP		= $(CCACHE) $(CROSS_COMPILE)objdump
++READELF		= $(CROSS_COMPILE)readelf
++STRIP		= $(CROSS_COMPILE)strip
++endif
++
  AS		= $(CROSS_COMPILE)as
 -LD		= $(CROSS_COMPILE)ld
 -CC		= $(CROSS_COMPILE)gcc
-+LD		= $(CCACHE) $(CROSS_COMPILE)ld
-+CC		= $(CCACHE) $(CROSS_COMPILE)gcc
  LDGOLD		= $(CROSS_COMPILE)ld.gold
  CPP		= $(CC) -E
 -AR		= $(CROSS_COMPILE)ar
-+AR		= $(CCACHE) $(CROSS_COMPILE)ar
- NM		= $(CROSS_COMPILE)nm
- STRIP		= $(CROSS_COMPILE)strip
+-NM		= $(CROSS_COMPILE)nm
+-STRIP		= $(CROSS_COMPILE)strip
 -OBJCOPY		= $(CROSS_COMPILE)objcopy
 -OBJDUMP		= $(CROSS_COMPILE)objdump
-+OBJCOPY		= $(CCACHE) $(CROSS_COMPILE)objcopy
-+OBJDUMP		= $(CCACHE) $(CROSS_COMPILE)objdump
  AWK		= awk
  GENKSYMS	= scripts/genksyms/genksyms
  INSTALLKERNEL  := installkernel
