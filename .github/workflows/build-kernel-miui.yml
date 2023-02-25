@@ -57,6 +57,9 @@ jobs:
           echo "CONFIG_KPROBES=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
           echo "CONFIG_HAVE_KPROBES=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
           echo "CONFIG_KPROBE_EVENTS=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
+          cd KernelSU
+          echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
+          cd -
 
       - name: Setup Ccache
         uses: hendrikmuhs/ccache-action@v1.2
@@ -94,13 +97,13 @@ jobs:
         run: |
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/Image-dtb .
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/dtbo.img .
-          zip -r "MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-${{ env.date }}.zip" *
-          mv "MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-${{ env.date }}.zip" $GITHUB_WORKSPACE
+          zip -r "MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-ksu-${{ env.KSU_VERSION }}-${{ env.date }}.zip" *
+          mv "MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-ksu-${{ env.KSU_VERSION }}-${{ env.date }}.zip" $GITHUB_WORKSPACE
 
       - name: Upload Anykernel
         uses: actions/upload-artifact@v3
         with:
-          name: MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-${{ env.date }}
+          name: MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-ksu-${{ env.KSU_VERSION }}-${{ env.date }}
           path: anykernel/*
 
       - name: Release
@@ -110,7 +113,7 @@ jobs:
           prerelease: true
           files: |
             kernel-source/out/arch/arm64/boot/*
-            MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-${{ env.date }}.zip
+            MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-ksu-${{ env.KSU_VERSION }}-${{ env.date }}.zip
           draft: true
           tag_name: ${{ github.ref }}-${{ matrix.device }}
 
