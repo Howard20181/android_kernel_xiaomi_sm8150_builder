@@ -53,10 +53,11 @@ jobs:
         working-directory: kernel-source
         run: |
           curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
-          echo "CONFIG_MODULES=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
-          echo "CONFIG_KPROBES=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
-          echo "CONFIG_HAVE_KPROBES=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
-          echo "CONFIG_KPROBE_EVENTS=y" >> arch/arm64/configs/${{ matrix.device }}_defconfig
+          defconfig="arch/arm64/configs/${{ matrix.device }}_defconfig"
+          echo "CONFIG_MODULES=y" >> $defconfig
+          echo "CONFIG_KPROBES=y" >> $defconfig
+          echo "CONFIG_HAVE_KPROBES=y" >> $defconfig
+          echo "CONFIG_KPROBE_EVENTS=y" >> $defconfig
           cd KernelSU
           echo "KSU_VERSION=$(($(git rev-list --count HEAD) + 10200))" >> $GITHUB_ENV
           cd -
