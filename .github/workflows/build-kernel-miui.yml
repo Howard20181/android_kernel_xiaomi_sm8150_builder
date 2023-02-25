@@ -91,8 +91,9 @@ jobs:
           middlever=r23
           echo "date=$date" >> $GITHUB_ENV
           echo "middlever=$middlever" >> $GITHUB_ENV
-          LLVM="CC='ccache clang' LD='ccache ld.lld' AR='ccache llvm-ar' NM=llvm-nm STRIP=llvm-strip OBJCOPY='ccache llvm-objcopy' OBJDUMP='ccache llvm-objdump' READELF=llvm-readelf HOSTCC='ccache clang' HOSTCXX='ccache clang++' HOSTAR='ccache llvm-ar' HOSTLD='ccache ld.lld'"
-          args="-j`nproc` $LLVM O=out ARCH=arm64 SUBARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- LOCALVERSION=-$middlever-$date"
+          CROSS_COMPILE="aarch64-linux-gnu-"
+          LLVM="CC='ccache "$CROSS_COMPILE"clang' LD='ccache "$CROSS_COMPILE"ld.lld' AR='ccache "$CROSS_COMPILE"llvm-ar' NM="$CROSS_COMPILE"llvm-nm STRIP="$CROSS_COMPILE"llvm-strip OBJCOPY='ccache "$CROSS_COMPILE"llvm-objcopy' OBJDUMP='ccache "$CROSS_COMPILE"llvm-objdump' READELF=llvm-readelf HOSTCC='ccache clang' HOSTCXX='ccache clang++' HOSTAR='ccache llvm-ar' HOSTLD='ccache ld.lld'"
+          args="-j`nproc` $LLVM O=out ARCH=arm64 SUBARCH=arm64 CROSS_COMPILE=$CROSS_COMPILE CROSS_COMPILE_ARM32=arm-linux-gnueabi- LOCALVERSION=-$middlever-$date"
           echo "Building kernel with $args"
 
           export KBUILD_BUILD_USER="Howard"
