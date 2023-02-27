@@ -1,17 +1,17 @@
-From 3367b926b1f531634671df2707a4a4b4039faca9 Mon Sep 17 00:00:00 2001
-From: Howard Wu <40033067+Howard20181@users.noreply.github.com>
-Date: Sat, 25 Feb 2023 21:36:55 +0800
+From 901a2f4014ecac96226cea6c422bd10c70b54d57 Mon Sep 17 00:00:00 2001
+From: Howard20181 <40033067+Howard20181@users.noreply.github.com>
+Date: Mon, 27 Feb 2023 20:57:23 +0800
 Subject: [PATCH] Makefile: Use CCACHE for faster compilation
 
 ---
- Makefile | 38 +++++++++++++++++++++++++++++---------
- 1 file changed, 29 insertions(+), 9 deletions(-)
+ Makefile | 35 ++++++++++++++++++++++++++---------
+ 1 file changed, 26 insertions(+), 9 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 3c210a2..6f68203 100644
+index c22c5ce..18338c9 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -361,8 +361,14 @@ HOST_LFS_CFLAGS := $(shell getconf LFS_CFLAGS 2>/dev/null)
+@@ -361,8 +361,13 @@ HOST_LFS_CFLAGS := $(shell getconf LFS_CFLAGS 2>/dev/null)
  HOST_LFS_LDFLAGS := $(shell getconf LFS_LDFLAGS 2>/dev/null)
  HOST_LFS_LIBS := $(shell getconf LFS_LIBS 2>/dev/null)
  
@@ -24,15 +24,13 @@ index 3c210a2..6f68203 100644
 +HOSTCC       = $(CCACHE) gcc
 +HOSTCXX      = $(CCACHE) g++
 +endif
-+
  HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
  		-fomit-frame-pointer -std=gnu89 $(HOST_LFS_CFLAGS)
  HOSTCXXFLAGS := -O2 $(HOST_LFS_CFLAGS)
-@@ -375,16 +381,30 @@ HOSTCFLAGS  += -Wno-unused-value -Wno-unused-parameter \
+@@ -375,16 +380,28 @@ HOSTCFLAGS  += -Wno-unused-value -Wno-unused-parameter \
  endif
  
  # Make variables (CC, etc...)
-+
 +ifneq ($(LLVM),)
 +CC		= $(CCACHE) clang
 +LD		= $(CCACHE) ld.lld
@@ -52,7 +50,6 @@ index 3c210a2..6f68203 100644
 +READELF		= $(CROSS_COMPILE)readelf
 +STRIP		= $(CROSS_COMPILE)strip
 +endif
-+
  AS		= $(CROSS_COMPILE)as
 -LD		= $(CROSS_COMPILE)ld
 -CC		= $(CROSS_COMPILE)gcc
@@ -67,5 +64,5 @@ index 3c210a2..6f68203 100644
  GENKSYMS	= scripts/genksyms/genksyms
  INSTALLKERNEL  := installkernel
 -- 
-2.35.1.windows.2
+2.39.1.windows.1
 

@@ -1,4 +1,4 @@
-name: Build MIUI-Kernel
+name: Build OSS-Kernel
 on:
   push:
     branches: ["main"]
@@ -10,7 +10,7 @@ jobs:
       matrix:
         device: [raphael, cepheus]
 
-    name: Build MIUI-Kernel-${{ matrix.device }}
+    name: Build OSS-Kernel-${{ matrix.device }}
     runs-on: ubuntu-latest
     env:
       CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
@@ -50,7 +50,7 @@ jobs:
         with:
           submodules: true
           repository: Laulan56/android_kernel_xiaomi_sm8150
-          ref: miui
+          ref: android13s
           path: kernel-source
 
       - name: Checkout Anykernel
@@ -58,7 +58,7 @@ jobs:
         with:
           submodules: true
           repository: Laulan56/anykernel
-          ref: miui-r
+          ref: xiaomi-kona
           path: anykernel
 
       - name: Setup KernelSU
@@ -77,7 +77,7 @@ jobs:
       - name: Setup Ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: MIUI-Kernel-${{ matrix.device }}
+          key: OSS-Kernel-${{ matrix.device }}
           save: ${{ github.event_name != 'pull_request' }}
           max-size: 2G
 
@@ -100,10 +100,10 @@ jobs:
 
           make $args ${{ matrix.device }}_defconfig && make $args
 
-      - name: Upload MIUI-kernel-${{ matrix.device }}
+      - name: Upload OSS-kernel-${{ matrix.device }}
         uses: actions/upload-artifact@v3
         with:
-          name: MIUI-kernel-${{ matrix.device }}
+          name: OSS-kernel-${{ matrix.device }}
           path: kernel-source/out/arch/arm64/boot/*
 
       - name: Prepare Anykernel
@@ -111,7 +111,7 @@ jobs:
         run: |
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/Image-dtb .
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/dtbo.img .
-          ZIP_NAME="MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-ksu-${{ env.KSU_VERSION }}-${{ env.date }}"
+          ZIP_NAME="MarisaKernel-${{ matrix.device }}-android-13-${{ env.middlever }}-ksu-${{ env.KSU_VERSION }}-${{ env.date }}"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
           zip -r "$ZIP_NAME.zip" *
           mv "$ZIP_NAME.zip" $GITHUB_WORKSPACE
