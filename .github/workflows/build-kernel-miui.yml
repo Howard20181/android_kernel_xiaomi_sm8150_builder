@@ -50,7 +50,7 @@ jobs:
         with:
           submodules: true
           repository: Laulan56/android_kernel_xiaomi_sm8150
-          ref: android13s
+          ref: android13
           path: kernel-source
 
       - name: Checkout Anykernel
