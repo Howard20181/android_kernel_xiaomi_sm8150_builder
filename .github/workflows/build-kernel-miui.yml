@@ -66,7 +66,7 @@ jobs:
           path: anykernel
 
       - name: Setup KernelSU
-        if: ${{ input.kernelsu != 'false' }}
+        if: ${{ inputs.kernelsu != 'false' }}
         working-directory: kernel-source
         run: |
           curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
@@ -117,7 +117,7 @@ jobs:
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/Image-dtb .
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/dtbo.img .
           ZIP_NAME="MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-${{ env.date }}"
-          if [ ${{ input.kernelsu }} != 'false' ]; then
+          if [ ${{ inputs.kernelsu }} != 'false' ]; then
             ZIP_NAME+="-ksu-${{ env.KSU_VERSION }}"
           fi
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
