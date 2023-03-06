@@ -3,7 +3,11 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
-
+    inputs:
+      kernelsu:
+        description: "Integration of KernelSU"
+        required: true
+        type: boolean
 jobs:
   build:
     strategy:
@@ -62,6 +66,7 @@ jobs:
           path: anykernel
 
       - name: Setup KernelSU
+        if: ${{ input.kernelsu != 'false' }}
         working-directory: kernel-source
         run: |
           curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
@@ -111,7 +116,10 @@ jobs:
         run: |
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/Image-dtb .
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/dtbo.img .
-          ZIP_NAME="MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-ksu-${{ env.KSU_VERSION }}-${{ env.date }}"
+          ZIP_NAME="MarisaKernel-${{ matrix.device }}-miui-r-${{ env.middlever }}-${{ env.date }}"
+          if [ ${{ input.kernelsu }} != 'false' ]; then
+            ZIP_NAME+="-ksu-${{ env.KSU_VERSION }}"
+          fi
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
           zip -r "$ZIP_NAME.zip" *
           mv "$ZIP_NAME.zip" $GITHUB_WORKSPACE
